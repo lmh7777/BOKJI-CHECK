@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ConditionInput from './components/ConditionInput';
 import BenefitList from './components/BenefitList';
 import BenefitDetail from './components/BenefitDetail';
 import { Benefit, Conditions } from './types';
-import { supabase } from './lib/supabaseClient';
 
 function App() {
   const [conditions, setConditions] = useState<Conditions | null>(null);
