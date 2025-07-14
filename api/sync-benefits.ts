@@ -58,7 +58,7 @@ export default async function handler(
     const xmlData = await apiResponse.text();
     console.log('API 응답(XML) 수신 완료.');
 
-    // --- 디버깅: 수신된 XML 구조 확인 ---
+    // --- 디버깅: Vercel 서버가 받은 원본 XML 구조를 확인합니다. (v2) ---
     console.log('--- RAW XML RESPONSE ---');
     console.log(xmlData);
     console.log('------------------------');
