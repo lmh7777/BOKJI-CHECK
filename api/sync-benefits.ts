@@ -61,11 +61,33 @@ export default async function handler(
     // 2. XML 데이터 파싱
     const parser = new XMLParser();
     const parsedData = parser.parse(xmlData);
+
+    // 공공데이터 API가 표준 에러 메시지를 반환했는지 확인
+    if (parsedData.result && parsedData.result.resultCode !== '00') {
+      console.error('API 에러 응답:', parsedData.result.resultMessage);
+      throw new Error(`공공데이터 API 오류: ${parsedData.result.resultMessage}`);
+    }
+    if (parsedData.cmmMsgHeader && parsedData.cmmMsgHeader.successYN === 'N') {
+        console.error('API 에러 응답:', parsedData.cmmMsgHeader.returnAuthMsg);
+        throw new Error(`공공데이터 API 오류: ${parsedData.cmmMsgHeader.returnAuthMsg}`);
+    }
+
+    // 데이터가 없는 경우, 오류가 아닌 정상 처리
+    if (!parsedData.servList || !parsedData.servList.serv) {
+      console.log('API에서 반환된 서비스 데이터가 없어 동기화를 건너뜁니다.');
+      return res.status(200).json({ 
+        success: true, 
+        message: '새롭게 동기화할 데이터가 없습니다.',
+      });
+    }
+
     const services = parsedData.servList.serv;
-    console.log(`파싱된 서비스 개수: ${services.length}`);
+    // API 결과가 1개일 경우 객체로, 2개 이상일 경우 배열로 반환되므로 항상 배열로 통일
+    const serviceList = Array.isArray(services) ? services : [services];
+    console.log(`파싱된 서비스 개수: ${serviceList.length}`);
 
     // 3. 데이터 정제 및 DB 형식으로 변환
-    const benefits: Benefit[] = services.map((service: any) => ({
+    const benefits: Benefit[] = serviceList.map((service: any) => ({
       service_id: service.servId,
       name: service.servNm,
       description: service.servDgst,
@@ -90,7 +112,7 @@ export default async function handler(
     console.log('데이터 동기화 성공적으로 완료.');
     res.status(200).json({
       success: true,
-      message: `${services.length}개의 복지 데이터가 성공적으로 동기화되었습니다.`,
+      message: `${serviceList.length}개의 복지 데이터가 성공적으로 동기화되었습니다.`,
       data: benefits.slice(0, 5) // 샘플로 5개 데이터만 응답에 포함
     });
 
