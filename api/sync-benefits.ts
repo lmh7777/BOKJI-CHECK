@@ -58,6 +58,11 @@ export default async function handler(
     const xmlData = await apiResponse.text();
     console.log('API 응답(XML) 수신 완료.');
 
+    // --- 디버깅: 수신된 XML 구조 확인 ---
+    console.log('--- RAW XML RESPONSE ---');
+    console.log(xmlData);
+    console.log('------------------------');
+
     // 2. XML 데이터 파싱
     const parser = new XMLParser();
     const parsedData = parser.parse(xmlData);
