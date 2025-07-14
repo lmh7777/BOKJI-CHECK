@@ -67,6 +67,11 @@ export default async function handler(
     const parser = new XMLParser();
     const parsedData = parser.parse(xmlData);
 
+    // --- 디버깅: 파싱된 데이터의 최상위 키(태그) 확인 ---
+    console.log('--- Parsed XML Top-Level Keys ---');
+    console.log(Object.keys(parsedData));
+    console.log('-----------------------------------');
+
     // 공공데이터 API가 표준 에러 메시지를 반환했는지 확인
     if (parsedData.result && parsedData.result.resultCode !== '00') {
       console.error('API 에러 응답:', parsedData.result.resultMessage);
